@@ -1,0 +1,8 @@
+[package]
+authors = ["andyboy"]
+name = "statusline"
+version = "0.1.0"
+
+[dependencies]
+chrono = "0.4.0"
+regex = "0.2.2"
