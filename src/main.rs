@@ -38,6 +38,28 @@ fn battery() -> String {
     }
 }
 
+fn wifi() -> String {
+    let output = Command::new("cat")
+        .arg("/proc/net/wireless")
+        .output()
+        .expect("Failed to cat proc/net/wireless");
+    let text = String::from_utf8_lossy(&output.stdout);
+
+    let wifi_regex = Regex::new(r"wlp3s0: \d+\s+(\d*).").unwrap();
+
+    let groups = wifi_regex.captures(&text).unwrap();
+
+    let ssid = Command::new("iwgetid").arg("-r").output().expect(
+        "Failed to run iwgetid",
+    );
+    let ssid = String::from_utf8_lossy(&ssid.stdout);
+    let mut ssid = String::from(ssid);
+    ssid.pop();
+
+
+    format!("{} {}%", ssid, groups.get(1).unwrap().as_str())
+}
+
 fn volume() -> String {
     let output = Command::new("pactl")
         .arg("list")
@@ -83,6 +105,8 @@ fn date() -> String {
     )
 }
 
+
+
 fn main() {
-    print!("{} {} {}", volume(), battery(), date());
+    print!("{} {} {} {}", wifi(), volume(), battery(), date());
 }
